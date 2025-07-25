@@ -1,0 +1,87 @@
+{% extends 'pos/base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4 fw-bold">📊 POS Dashboard</h3>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow border-0 text-white bg-primary rounded-4">
+      <div class="card-body text-center">
+        <h6 class="mb-2">Total Sales</h6>
+        <h3>Rs {{ total_sales }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0 text-white bg-success rounded-4">
+      <div class="card-body text-center">
+        <h6 class="mb-2">Total Products</h6>
+        <h3>{{ total_products }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0 text-white bg-info rounded-4">
+      <div class="card-body text-center">
+        <h6 class="mb-2">Total Customers</h6>
+        <h3>{{ total_customers }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0 text-dark bg-warning rounded-4">
+      <div class="card-body text-center">
+        <h6 class="mb-2">Today's Orders</h6>
+        <h3>{{ todays_orders }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Stock Alert -->
+{% if low_stock %}
+  <div class="alert alert-danger shadow-sm rounded-3">
+    ⚠️ <strong>Low stock products:</strong>
+    {% for product in low_stock %}
+      <span class="badge bg-dark me-1">{{ product.name }} ({{ product.stock }})</span>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Recent Sales Table -->
+<div class="card shadow-sm border-0 mt-4">
+  <div class="card-header bg-dark text-white fw-bold rounded-top">
+    🧾 Recent Sales
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover table-striped m-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sale in recent_sales %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ sale.date|date:"d M, Y H:i" }}</td>
+          <td>
+            {% if sale.customer %}
+              {{ sale.customer.name }}
+            {% else %}
+              <span class="text-muted">Walk-in</span>
+            {% endif %}
+          </td>
+          <td><strong>Rs {{ sale.total_amount }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

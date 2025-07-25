@@ -1,0 +1,42 @@
+{% extends 'pos/base.html' %}
+
+{% block title %}Admin Users{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h4 class="mb-3">Users Added by You</h4>
+
+    <!-- Display Success Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- User List Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_profile in users %}
+                <tr>
+                    <td>{{ user_profile.user.username }}</td>  <!-- Display Username -->
+                    <td>{{ user_profile.role }}</td>  <!-- Display Role -->
+                    <td>
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No users found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

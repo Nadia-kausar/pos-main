@@ -1,0 +1,12 @@
+{% extends 'pos/base.html' %}
+{% block title %}Add Category{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">➕ Add New Category</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+{% endblock %}
+    

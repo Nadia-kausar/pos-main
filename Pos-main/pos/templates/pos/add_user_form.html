@@ -1,0 +1,26 @@
+{% extends 'pos/base.html' %}
+{% block title %}Add {{ role|title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card p-4 shadow-sm">
+    <h4 class="mb-3">Add {{ role|title }} User</h4>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add {{ role|title }}</button>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

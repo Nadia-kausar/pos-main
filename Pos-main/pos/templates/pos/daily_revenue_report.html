@@ -1,0 +1,22 @@
+{% extends 'pos/base.html' %}
+{% block title %}Daily Revenue{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">📈 Revenue in Last 30 Days</h3>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Total Revenue (Rs)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in revenue %}
+        <tr>
+            <td>{{ entry.day }}</td>
+            <td>{{ entry.total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

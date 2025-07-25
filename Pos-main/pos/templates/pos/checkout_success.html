@@ -1,0 +1,9 @@
+{% extends 'pos/base.html' %}
+{% block title %}Checkout Success{% endblock %}
+{% block content %}
+<div class="alert alert-success mt-4">
+    ✅ Sale completed successfully!
+</div>
+
+<a href="{% url 'product_list' %}" class="btn btn-primary">⬅️ Back to Products</a>
+{% endblock %}

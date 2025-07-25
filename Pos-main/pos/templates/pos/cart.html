@@ -1,0 +1,75 @@
+{% extends 'pos/base.html' %}
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">🛒 Your Shopping Cart</h3>
+
+{% if cart_items %}
+<table class="table table-bordered table-hover rounded-3 overflow-hidden shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Price (Rs)</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.name }}</td>
+            <td>Rs {{ item.price }}</td>
+            <td>
+                <a href="{% url 'decrease_quantity' item.id %}" class="text-danger fw-bold me-2">−</a>
+                {{ item.quantity }}
+                <a href="{% url 'increase_quantity' item.id %}" class="text-success fw-bold ms-2">+</a>
+            </td>
+            <td><strong>Rs {{ item.subtotal|floatformat:2 }}</strong></td>
+            <td>
+                {% if item.stock_available < item.quantity %}
+                    <span class="badge bg-danger">Insufficient</span>
+                {% else %}
+                    <span class="badge bg-success">Available</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr class="table-secondary">
+            <th colspan="4" class="text-end">Grand Total:</th>
+            <th colspan="2">Rs {{ total|floatformat:2 }}</th>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="text-end mt-3">
+    {% if out_of_stock_items %}
+        <button class="btn btn-outline-danger fw-semibold" disabled>
+            ❌ Cannot Checkout - Fix Stock Issues
+        </button>
+        <div class="text-danger mt-2 small">
+            The following items exceed available stock:
+            <ul class="mb-0">
+                {% for p in out_of_stock_items %}
+                    <li>{{ p.name }} (Only {{ p.stock }} left)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <a href="{% url 'checkout' %}" class="btn btn-success fw-semibold">
+            ✅ Proceed to Checkout
+        </a>
+    {% endif %}
+</div>
+
+{% else %}
+<div class="alert alert-info shadow-sm rounded">
+    🛍️ Your cart is empty. Go to <a href="{% url 'product_list' %}">Products</a> to add items.
+</div>
+{% endif %}
+{% endblock %}
+    

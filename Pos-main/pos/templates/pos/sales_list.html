@@ -1,0 +1,52 @@
+{% extends 'pos/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">🧾 Receipts</h2>
+
+    {% if sales %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Total (Rs)</th>
+                        <th>Payment</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ sale.date|date:"d M Y, H:i" }}</td>
+                        <td>
+                            {% if sale.customer %}
+                                {{ sale.customer.name }}
+                            {% else %}
+                                Walk-in
+                            {% endif %}
+                        </td>
+                        <td>Rs {{ sale.total_amount|floatformat:2 }}</td>
+                        <td>{{ sale.payment_method|capfirst }}</td>
+                        <td>
+                            <a href="{% url 'receipt_pdf' sale.id %}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                Download PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No recent sales found.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

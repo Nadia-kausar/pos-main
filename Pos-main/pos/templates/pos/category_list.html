@@ -1,0 +1,23 @@
+{% extends 'pos/base.html' %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h3>📂 Categories</h3>
+<a href="{% url 'add_category' %}" class="btn btn-success mb-3">➕ Add Category</a>
+<table class="table table-bordered">
+    <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ category.name }}</td>
+            <td>
+                <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-warning">✏️</a>
+                <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-danger">🗑️</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No categories found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}POS System{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px 10px;
+        }
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="text-white text-center mb-4">🧾 POS System</h4>
+
+<!-- 👤 User -->
+<div class="dropend mb-3">
+    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+        👤 {% if user.is_authenticated %}{{ request.user.username }}{% else %}User{% endif %}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark">
+        {% if user.is_authenticated %}
+            <li><a class="dropdown-item small" href="{% url 'logout' %}">🚪 Logout</a></li>
+        {% else %}
+            <li><a class="dropdown-item small" href="{% url 'login' %}">🔐 Login</a></li>
+            <li><a class="dropdown-item small" href="{% url 'signup' %}">📝 Create Account</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+  <hr class="bg-white">
+    {% if request.user.userprofile.role == 'admin' %}
+      <div class="dropend">
+          <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">👔 Employees</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item" href="{% url 'add_user' role='inventory' %}">Add Inventory Staff</a></li>
+  <li><a class="dropdown-item" href="{% url 'add_user' role='cashier' %}">Add Cashier</a></li>
+  <li><a class="dropdown-item" href="{% url 'add_user' role='manager' %}">Add Manager</a></li>
+  
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'admin_users_list' %}">View Employees List</a></li>
+          </ul>
+      </div>
+    {% endif %}
+
+    <hr class="bg-white">
+
+    <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
+    <hr class="bg-white">
+
+    <!-- 👥 Customers -->
+    <div class="dropend">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">👥 Customers</a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item small" href="{% url 'add_customer' %}">Add Customer</a></li>
+            <li><a class="dropdown-item small" href="{% url 'customer_list' %}">All Customers</a></li>
+        </ul>
+    </div>
+
+    <hr class="bg-white">
+
+    <!-- 📂 Categories -->
+    <div class="dropend">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">📂 Categories</a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item small" href="{% url 'add_category' %}">Add Category</a></li>
+            <li><a class="dropdown-item small" href="{% url 'category_list' %}">All Categories</a></li>
+        </ul>
+    </div>
+
+    <hr class="bg-white">
+
+    <!-- 📦 Products -->
+    <div class="dropend">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">📦 Products</a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item small" href="{% url 'all_products' %}">📷 Add Product</a></li>
+            <li><a class="dropdown-item small" href="{% url 'product_list' %}">All Products</a></li>
+            <li><a class="dropdown-item small" href="{% url 'product_sales_report' %}">Top Selling</a></li>
+        </ul>
+    </div>
+
+    <hr class="bg-white">
+
+    <!-- 📊 Reports -->
+    <div class="dropend">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">📊 Reports</a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item small" href="{% url 'daily_revenue_report' %}">Daily Revenue</a></li>
+            <li><a class="dropdown-item small" href="{% url 'sales_report' %}">Sales by Categories</a></li>
+            <li><a class="dropdown-item small" href="{% url 'product_sales_report' %}">Sales by Items</a></li>
+            <li><a class="dropdown_item small" href="{% url 'sales_list' %}">Receipts </a></li>
+        </ul>
+    </div>
+
+    <hr class="bg-white">
+
+    <div class="dropend">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">💸 Expenses</a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+        <li><a class="dropdown-item small" href="{% url 'add_expense' %}">Add Expense</a></li>
+        <li><a class="dropdown-item small" href="{% url 'expense_list' %}">Expense List</a></li>
+        
+
+    </div>
+
+    <hr class="bg-white">
+
+    <a href="{% url 'cart' %}">🛒 Cart</a>
+
+
+        
+</div>
+
+<!-- Main Content -->
+<div class="content">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

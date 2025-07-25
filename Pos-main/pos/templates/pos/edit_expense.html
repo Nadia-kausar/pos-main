@@ -1,0 +1,12 @@
+{% extends 'pos/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4>Edit Expense</h4>
+  <form method="post" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="{% url 'expense_list' %}" class="btn btn-secondary ms-2">Cancel</a>
+  </form>
+</div>
+{% endblock %}

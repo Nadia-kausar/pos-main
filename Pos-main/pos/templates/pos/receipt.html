@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Receipt #{{ sale.id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; margin: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { margin-bottom: 5px; }
+        .info p { margin: 4px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+        th { background-color: #f0f0f0; }
+        .footer { margin-top: 30px; text-align: center; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🧾 POS Receipt</h2>
+</div>
+
+<div class="info">
+    <p><strong>Date:</strong> {{ sale.date }}</p>
+    <p><strong>Customer:</strong>
+        {% if sale.customer %}
+            {{ sale.customer.name }}
+        {% else %}
+            Walk-in Customer
+        {% endif %}
+    </p>
+    <p><strong>Payment Method:</strong> {{ sale.payment_method|capfirst }}</p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price (Rs)</th>
+            <th>Subtotal (Rs)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price|floatformat:2 }}</td>
+            <td>{{ item.subtotal|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+    <td colspan="4" align="right"><strong>Total</strong></td>
+    <td><strong>Rs {{ total|floatformat:2 }}</strong></td>
+</tr>
+<tr>
+    <td colspan="4" align="right"><strong>Amount Paid</strong></td>
+    <td><strong>Rs {{ sale.amount_paid|floatformat:2 }}</strong></td>
+</tr>
+<tr>
+    <td colspan="4" align="right"><strong>Change Due</strong></td>
+    <td><strong>Rs {{ sale.change_due|floatformat:2 }}</strong></td>
+</tr>
+
+    </tbody>
+</table>
+
+<div class="footer">
+    <p>Thank you for shopping with us!</p>
+</div>
+
+</body>
+</html>

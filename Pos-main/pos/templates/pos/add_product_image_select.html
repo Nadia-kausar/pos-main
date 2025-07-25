@@ -1,0 +1,229 @@
+{% extends 'pos/base.html' %}
+{% load static %}
+{% block title %}Add Product via Image{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <h4 class="mb-4 fw-bold text-center">📷 Add Product</h4>
+
+  <div class="text-center mb-4">
+    <a href="{% url 'add_product_form' %}" class="btn btn-success">
+      ➕ Add New Product
+    </a>
+  </div>
+
+  <!-- Categories Navigation -->
+  <div class="d-flex flex-wrap align-items-center justify-content-center mb-4" style="overflow-x: auto; white-space: nowrap;">
+    <a href="{% url 'all_products' %}" class="btn btn-outline-primary me-2 mb-2">All Items</a>
+    {% for category in categories %}
+      <a href="{% url 'products_by_category_id' category.id %}" class="btn btn-outline-secondary me-2 mb-2">
+        {{ category.name }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Product Grid -->
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+    {% for product in products %}
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 120px; object-fit: contain;">
+        {% else %}
+          <img src="{% static 'pos/no-image.png' %}" class="card-img-top" alt="No image" style="height: 120px; object-fit: contain;">
+        {% endif %}
+
+        <div class="card-body p-2 text-center">
+          <h6 class="card-title mb-1">{{ product.name }}</h6>
+          <p class="card-text text-muted mb-1 small">Rs. {{ product.price }}</p>
+          <button type="button"
+                  class="btn btn-sm btn-outline-success"
+                  onclick="addToCart('{{ product.id }}', '{{ product.name }}', {{ product.price }})">
+            Add to Cart 🛒
+          </button>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+      <p class="text-muted">No products available.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 🛒 Floating Cart Button -->
+<div style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <button class="btn btn-outline-dark position-relative" onclick="toggleCartDropdown()">
+    🛒 Cart
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">
+      0
+    </span>
+  </button>
+
+  <!-- Dropdown-style Cart Panel -->
+  <div id="cartDropdown" style="
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1051;
+  ">
+    <div class="p-3">
+      <h6 class="fw-bold mb-3">🛒 Your Cart</h6>
+      <ul id="cartItems" class="list-group mb-3"></ul>
+      <p class="mb-2"><strong>Total:</strong> Rs <span id="cartTotal">0</span></p>
+      <a href="{% url 'checkout' %}" class="btn btn-primary w-100">🧾 Checkout</a>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Cart Logic -->
+<script>
+  const cart = {};
+  const cartItems = document.getElementById('cartItems');
+  const cartTotal = document.getElementById('cartTotal');
+  const cartCount = document.getElementById('cartCount');
+  const cartDropdown = document.getElementById('cartDropdown');
+
+  function toggleCartDropdown() {
+    cartDropdown.style.display = (cartDropdown.style.display === 'none' || cartDropdown.style.display === '') ? 'block' : 'none';
+  }
+
+  document.addEventListener('click', function (e) {
+    const isClickInside = cartDropdown.contains(e.target) || e.target.closest('button[onclick="toggleCartDropdown()"]');
+    if (!isClickInside) {
+      cartDropdown.style.display = 'none';
+    }
+  });
+
+  // Load cart data on page load
+  fetch("{% url 'get_cart_data' %}")
+    .then(response => response.json())
+    .then(data => {
+      const serverCart = data.cart;
+      for (let id in serverCart) {
+        cart[id] = serverCart[id];
+      }
+      renderCart();
+    });
+
+  function addToCart(productId, productName, productPrice) {
+    fetch(`/add-to-cart/${productId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        if (cart[productId]) {
+          cart[productId].quantity += 1;
+        } else {
+          cart[productId] = {
+            name: productName,
+            price: productPrice,
+            quantity: 1
+          };
+        }
+
+        renderCart();
+        cartDropdown.style.display = 'block';
+      } else {
+        alert('Error: ' + data.message);
+      }
+    });
+  }
+
+  function renderCart() {
+    cartItems.innerHTML = '';
+    let total = 0;
+    let count = 0;
+
+    for (let id in cart) {
+      const item = cart[id];
+      total += item.price * item.quantity;
+      count += item.quantity;
+
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.innerHTML = `
+        <div>
+          <strong>${item.name}</strong><br>
+          <button class="btn btn-sm btn-outline-secondary me-2" onclick="decreaseQuantity('${id}')">-</button>
+          <span>${item.quantity}</span>
+          <button class="btn btn-sm btn-outline-secondary ms-2" onclick="increaseQuantity('${id}')">+</button>
+        </div>
+        <div>Rs ${(item.price * item.quantity).toFixed(2)}</div>
+      `;
+      cartItems.appendChild(li);
+    }
+
+    cartTotal.textContent = total.toFixed(2);
+    cartCount.textContent = count;
+  }
+
+  function increaseQuantity(id) {
+    fetch(`/increase-quantity/${id}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        cart[id].quantity = data.quantity;
+        renderCart();
+      } else {
+        alert('Failed to increase quantity');
+      }
+    });
+  }
+
+  function decreaseQuantity(id) {
+    fetch(`/decrease-quantity/${id}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        if (data.quantity === 0) {
+          delete cart[id];
+        } else {
+          cart[id].quantity = data.quantity;
+        }
+        renderCart();
+      } else {
+        alert('Failed to decrease quantity');
+      }
+    });
+  }
+  const params = new URLSearchParams(window.location.search);
+  const receiptId = params.get("receipt");
+
+  if (receiptId) {
+    // Open PDF receipt in new tab
+    window.open(`/receipt-pdf/${receiptId}/`, '_blank');
+
+    // Remove the query param from URL (optional)
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+</script>
+{% endblock %}

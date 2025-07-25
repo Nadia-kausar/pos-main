@@ -1,0 +1,12 @@
+{% extends 'pos/base.html' %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ request.user.username }} (Admin)</p>
+
+<ul>
+    <li><a href="{% url 'add_product' %}">Add Product</a></li>
+    <li><a href="{% url 'sales_report' %}">Sales Report</a></li>
+</ul>
+
+{% endblock %}

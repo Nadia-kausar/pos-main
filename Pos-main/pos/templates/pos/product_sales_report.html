@@ -1,0 +1,26 @@
+{% extends 'pos/base.html' %}
+{% block title %}Most Sold Products{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">📊 Most Sold Products</h3>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Total Sold</th>
+            <th>Total Earned (Rs)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in report %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product__name }}</td>
+            <td>{{ item.total_quantity }}</td>
+            <td>{{ item.total_earned }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

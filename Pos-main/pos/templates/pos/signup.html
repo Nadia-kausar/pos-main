@@ -1,0 +1,27 @@
+{% extends 'pos/base_auth.html' %}  {# ✅ Just this one line changed #}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h4>📝 Sign Up</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          </form>
+          <div class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

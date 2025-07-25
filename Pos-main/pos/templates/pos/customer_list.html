@@ -1,0 +1,30 @@
+{% extends 'pos/base.html' %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<h3>👤 Customers</h3>
+<a href="{% url 'add_customer' %}" class="btn btn-success mb-3">➕ Add Customer</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Loyalty</th><th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.phone }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.loyalty_points }}</td>
+            <td>
+                <a href="{% url 'edit_customer' customer.id %}" class="btn btn-sm btn-warning">✏️</a>
+                <a href="{% url 'delete_customer' customer.id %}" class="btn btn-sm btn-danger">🗑️</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No customers found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

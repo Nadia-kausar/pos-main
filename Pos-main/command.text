@@ -1,0 +1,8 @@
+For models 
+
+python manage.py makemigrations
+pyhton manage.py migrate
+
+For run the app
+
+python manage.py runserver

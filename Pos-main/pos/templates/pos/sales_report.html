@@ -1,0 +1,83 @@
+{% extends 'pos/base.html' %}
+{% block title %}Sales Report{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">📆 Category Sales Report</h3>
+<head><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label for="date" class="form-label">Select Date</label>
+        <input type="date" id="date" name="date" class="form-control" value="{{ selected_date }}">
+    </div>
+    <div class="col-md-4">
+        <label for="category" class="form-label">Select Category</label>
+        <select id="category" name="category" class="form-select">
+            <option value="">-- Choose --</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if selected_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4 align-self-end">
+        <button class="btn btn-primary" type="submit">🔍 Generate Report</button>
+    </div>
+</form>
+
+{% if results %}
+<div class="card">
+    <div class="card-body">
+        <h5>📂 Report Summary</h5>
+        <p><strong>Total Sales:</strong> Rs {{ results.total_sales }}</p>
+        <p><strong>Total Quantity Sold:</strong> {{ results.total_qty }}</p>
+        <p><strong>Customers:</strong> 
+            {% if results.customers %}
+                {{ results.customers|join:", " }}
+            {% else %}
+                Walk-in Only
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+{% if chart_data.labels %}
+<hr>
+<h5 class="mt-4">📊 Product-wise Quantity Sold</h5>
+<canvas id="salesChart" width="400" height="200"></canvas>
+
+<script>
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  const salesChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ chart_data.labels|safe }},
+      datasets: [{
+        label: 'Quantity Sold',
+        data: {{ chart_data.quantities|safe }},
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Quantity' }
+        },
+        x: {
+          title: { display: true, text: 'Products' }
+        }
+      }
+    }
+  });
+</script>
+{% endif %}
+
+{% elif selected_category or selected_date %}
+  <div class="alert alert-warning">⚠️ No records found for selected date and category.</div>
+{% endif %}
+
+
+{% endblock %}

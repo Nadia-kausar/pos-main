@@ -1,0 +1,42 @@
+{% extends 'pos/base_auth.html' %}  {# <--- this is the only change #}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0">🔐 Sign In to POS System</h4>
+            </div>
+            <div class="card-body px-4">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        ⚠️ Invalid username or password. Please try again.
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">👤 Username</label>
+                        <input type="text" name="username" id="username" class="form-control" value="{{ form.username.value|default_if_none:'' }}" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">🔑 Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">➡️ Login</button>
+                </form>
+
+                <hr>
+                <p class="text-center">
+                    Don’t have an account? <a href="{% url 'signup' %}">📝 Create Account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
